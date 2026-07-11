@@ -1,0 +1,5 @@
+package com.example.Backend.exception;
+
+public class GlobalExceptionHandler {
+    
+}
