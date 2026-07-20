@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.Backend.dto.request.ServiceTypeRequest;
 import com.example.Backend.model.ServiceType;
 
-public interface AuthService {
+public interface ServiceTypeService {
     ServiceType createServiceType(ServiceTypeRequest request);
     List<ServiceType> getAllServiceTypes();
     ServiceType getServiceTypeById(String id);
