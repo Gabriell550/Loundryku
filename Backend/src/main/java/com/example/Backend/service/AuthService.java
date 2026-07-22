@@ -1,14 +1,12 @@
 package com.example.Backend.service;
 
-import java.util.List;
+import com.example.Backend.dto.response.LoginResponse;
+import com.example.Backend.dto.request.LoginRequest;
+import com.example.Backend.dto.request.RegisterRequest;
+import com.example.Backend.model.User;
 
-import com.example.Backend.dto.request.ServiceTypeRequest;
-import com.example.Backend.model.ServiceType;
 
 public interface AuthService {
-    ServiceType createServiceType(ServiceTypeRequest request);
-    List<ServiceType> getAllServiceTypes();
-    ServiceType getServiceTypeById(String id);
-    ServiceType updateServiceType(String id, ServiceTypeRequest request);
-    void deleteServiceType(String id);
+    User register(RegisterRequest request);
+    LoginResponse login(LoginRequest request);
 }
