@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router';
 
 export default function Index() {
-  return <Redirect href={'/register' as any} />;
+  return <Redirect href={'/userManagement' as any} />;
 }
