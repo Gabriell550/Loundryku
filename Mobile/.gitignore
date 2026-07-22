@@ -36,6 +36,11 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+#design
+design.md
+app flow & prd.md
+design reference/
+
 app-example
 
 # generated native folders
