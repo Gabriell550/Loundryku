@@ -36,8 +36,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-<<<<<<< Updated upstream
-=======
+
 #design
 design.md
 app-flow.md
