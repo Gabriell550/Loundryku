@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Backend.dto.request.RegisterRequest;
+import com.example.Backend.dto.request.UpdateUserRequest;
 import com.example.Backend.dto.response.ApiResponse;
 import com.example.Backend.dto.response.RegisterResponse;
 import com.example.Backend.model.User;
@@ -61,6 +63,15 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<RegisterResponse>>> getAllUsers() {
         List<RegisterResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(ApiResponse.success("Berhasil mengambil data user", users));
+    }
+
+    // Admin update data user (nama, password, role)
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<RegisterResponse>> updateUser(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserRequest request) {
+        RegisterResponse response = userService.updateUser(id, request);
+        return ResponseEntity.ok(ApiResponse.success("User berhasil diupdate", response));
     }
 
     // Admin hapus akun staff (misal kasir sudah tidak kerja lagi)

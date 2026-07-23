@@ -1,0 +1,134 @@
+$kind: http-request
+
+method: POST
+
+url: '{{base_url}}/api/orders'
+
+order: 1000
+
+description: |-
+
+  Endpoint ini membuat order laundry baru.
+
+
+
+  Yang diuji:
+
+  - customerId dan serviceTypeId dikirim
+
+  - order berhasil dibuat
+
+  - id order disimpan untuk test berikutnya
+
+
+
+  Kenapa penting:
+
+  Ini adalah proses inti bisnis laundry karena order menjadi sumber status dan total pembayaran.
+
+headers:
+
+  - key: Content-Type
+
+    value: application/json
+
+auth:
+
+  type: bearer
+
+  credentials:
+
+    - key: token
+
+      value: '{{jwt_token}}'
+
+body:
+
+  type: json
+
+  content: |-
+
+    {
+
+      "customerId": "{{customer_id}}",
+
+      "items": [
+
+        {
+
+          "serviceTypeId": "{{service_type_id}}",
+
+          "qty": 2
+
+        }
+
+      ]
+
+    }
+
+post-response:
+
+  - type: text/javascript
+
+    code: |-
+
+      pm.test("Status code harus 201", function () {
+
+        pm.response.to.have.status(201);
+
+      });
+
+
+
+      pm.test("Response time harus di bawah 3000 ms", function () {
+
+        pm.expect(pm.response.responseTime).to.be.below(3000);
+
+      });
+
+
+
+      pm.test("Content-Type harus JSON", function () {
+
+        pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
+
+      });
+
+
+
+      const jsonData = pm.response.json();
+
+
+
+      pm.test("success harus true", function () {
+
+        pm.expect(jsonData.success).to.eql(true);
+
+      });
+
+
+
+      pm.test("message create order harus benar", function () {
+
+        pm.expect(jsonData.message).to.eql("Order berhasil dibuat");
+
+      });
+
+
+
+      pm.test("field penting order tidak boleh null", function () {
+
+        pm.expect(jsonData.data.id).to.be.a("string").and.not.empty;
+
+        pm.expect(jsonData.data.invoiceNumber).to.be.a("string").and.not.empty;
+
+        pm.expect(jsonData.data.status).to.be.a("string").and.not.empty;
+
+        pm.expect(jsonData.data.totalPrice).to.not.eql(null);
+
+      });
+
+
+
+      pm.environment.set("order_id", jsonData.data.id);
+

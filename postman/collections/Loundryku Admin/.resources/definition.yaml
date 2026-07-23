@@ -1,0 +1,20 @@
+$kind: collection
+name: 'Loundryku Admin'
+description: 'Collection lokal untuk operasi admin Loundryku. Mencakup login admin, manajemen user, service types, dan orders. Siap untuk penambahan test, dokumentasi, dan verifikasi pada langkah berikutnya.'
+variables:
+  - key: base_url
+    value: 'http://localhost:8080'
+  - key: admin_username
+    value: 'admin'
+  - key: admin_password
+    value: 'admin123'
+  - key: jwt_token
+    value: ''
+  - key: admin_user_id
+    value: ''
+  - key: customer_id
+    value: ''
+  - key: service_type_id
+    value: ''
+  - key: order_id
+    value: ''

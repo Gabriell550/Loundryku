@@ -1,0 +1,32 @@
+$kind: http-example
+name: '200 OK'
+request:
+  url: '{{base_url}}/api/orders'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Daftar order berhasil diambil",
+        "data": [
+          {
+            "id": "3001",
+            "customerId": "15",
+            "status": "MENUNGGU",
+            "items": [
+              {
+                "serviceTypeId": "21",
+                "qty": 2
+              }
+            ]
+          }
+        ]
+      }
+order: 1000

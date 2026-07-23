@@ -9,18 +9,20 @@ import com.example.Backend.dto.response.LoginResponse;
 import com.example.Backend.exception.ResourceNotFoundException;
 import com.example.Backend.model.User;
 import com.example.Backend.repository.UserRepository;
-import com.example.Backend.security.JwtUtil;
+import com.example.Backend.security.JwtService;
 import com.example.Backend.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // bean BCrypt dari SecurityConfig
-    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public User register(RegisterRequest request) {
@@ -30,29 +32,32 @@ public class AuthServiceImpl implements AuthService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                // PENTING: password di-hash dulu pakai BCrypt sebelum disimpan.
-                // Password asli TIDAK PERNAH tersimpan di database.
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .role(request.getRole() != null ? request.getRole() : User.Role.KASIR)
                 .build();
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("User dibuat: username={}, role={}", saved.getUsername(), saved.getRole());
+        return saved;
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Username atau password salah"));
+                .orElseThrow(() -> {
+                    log.warn("Login gagal: username {} tidak ditemukan", request.getUsername());
+                    return new ResourceNotFoundException("Username atau password salah");
+                });
 
-        // passwordEncoder.matches() membandingkan password mentah dari client
-        // dengan hash yang tersimpan di database, TANPA perlu "membalikkan" hash-nya
-        // (memang tidak bisa dibalikkan, itulah gunanya hashing).
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("Login gagal: password salah untuk username {}", request.getUsername());
             throw new ResourceNotFoundException("Username atau password salah");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
+
+        log.info("Login berhasil: username={}, role={}", user.getUsername(), user.getRole());
 
         return LoginResponse.builder()
                 .token(token)

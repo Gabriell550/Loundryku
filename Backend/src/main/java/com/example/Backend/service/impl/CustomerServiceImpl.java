@@ -49,6 +49,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<Customer> searchCustomers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return customerRepository.findAll();
+        }
+        return customerRepository.searchByNameOrPhone(query.trim());
+    }
+
+    @Override
     public void deleteCustomer(String id) {
         Customer customer = getCustomerById(id);
         customerRepository.delete(customer);

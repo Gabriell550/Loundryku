@@ -1,0 +1,30 @@
+$kind: http-example
+name: '201 Created'
+request:
+  url: '{{base_url}}/api/orders'
+  method: POST
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Order berhasil dibuat",
+        "data": {
+          "id": "3001",
+          "customerId": "15",
+          "status": "MENUNGGU",
+          "items": [
+            {
+              "serviceTypeId": "21",
+              "qty": 2
+            }
+          ]
+        }
+      }
+order: 1000
