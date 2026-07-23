@@ -42,7 +42,7 @@ export default function LoginScreen() {
     await new Promise((resolve) => setTimeout(resolve, 1200));
 
     setIsSubmitting(false);
-    router.replace('/(tabs)'); // arahkan ke Dashboard setelah login berhasil
+    router.replace("/(tabs)"); // arahkan ke Dashboard setelah login berhasil
   };
 
   return (
