@@ -11,4 +11,5 @@ public interface CustomerService {
     Customer getCustomerById(String id);
     Customer updateCustomer(String id, CustomerRequest request);
     void deleteCustomer(String id);
+    List<Customer> searchCustomers(String query);
 }

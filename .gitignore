@@ -1,0 +1,27 @@
+# Root level ignores for Loundryku project
+
+# Sensitive files
+token.txt
+
+# Runtime files
+*.log
+*.pid
+
+# Design documents (already in Mobile/.gitignore, adding root level)
+design.md
+app-flow.md
+prd.md
+
+# Postman auto-generated folders (currently empty)
+postman/flows/
+postman/mocks/
+postman/specs/
+
+# macOS
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+

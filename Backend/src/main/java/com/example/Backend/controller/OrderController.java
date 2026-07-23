@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Backend.dto.request.OrderRequest;
@@ -51,15 +52,24 @@ public class OrderController {
                 .body(ApiResponse.success("Order berhasil dibuat", order));
     }
 
-    // Ambil semua order (nanti bisa ditambah filter/pagination)
     @GetMapping
     public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
         return ResponseEntity.ok(ApiResponse.success("Berhasil mengambil data order", orders));
     }
 
-    // Ambil 1 order berdasarkan id
-    // {id} di path otomatis ditangkap oleh @PathVariable
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<Order>>> searchOrders(@RequestParam String q) {
+        List<Order> orders = orderService.searchOrders(q);
+        return ResponseEntity.ok(ApiResponse.success("Berhasil mencari order", orders));
+    }
+
+    @GetMapping("/by-invoice/{invoiceNumber}")
+    public ResponseEntity<ApiResponse<Order>> getOrderByInvoice(@PathVariable String invoiceNumber) {
+        Order order = orderService.getOrderByInvoiceNumber(invoiceNumber);
+        return ResponseEntity.ok(ApiResponse.success("Berhasil mengambil data order", order));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable String id) {
         Order order = orderService.getOrderById(id);

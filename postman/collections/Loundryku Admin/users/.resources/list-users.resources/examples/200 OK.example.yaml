@@ -1,0 +1,33 @@
+$kind: http-example
+name: '200 OK'
+request:
+  url: '{{base_url}}/api/users'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Daftar user berhasil diambil",
+        "data": [
+          {
+            "id": "1",
+            "username": "admin",
+            "fullName": "Administrator",
+            "role": "ADMIN"
+          },
+          {
+            "id": "12",
+            "username": "kasir1",
+            "fullName": "Kasir Satu",
+            "role": "KASIR"
+          }
+        ]
+      }
+order: 1000

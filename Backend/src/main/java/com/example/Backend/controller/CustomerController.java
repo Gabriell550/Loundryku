@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Backend.dto.request.CustomerRequest;
@@ -48,6 +49,12 @@ public class CustomerController {
     public ResponseEntity<ApiResponse<List<Customer>>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(ApiResponse.success("Berhasil mengambil data customer", customers));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<Customer>>> searchCustomers(@RequestParam String q) {
+        List<Customer> customers = customerService.searchCustomers(q);
+        return ResponseEntity.ok(ApiResponse.success("Berhasil mencari customer", customers));
     }
 
     @GetMapping("/{id}")

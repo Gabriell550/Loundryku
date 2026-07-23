@@ -1,0 +1,23 @@
+$kind: http-example
+name: '200 OK'
+request:
+  url: '{{base_url}}/api/orders/{{order_id}}/status'
+  method: PATCH
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Status order berhasil diperbarui",
+        "data": {
+          "id": "3001",
+          "status": "DIPROSES"
+        }
+      }
+order: 1000

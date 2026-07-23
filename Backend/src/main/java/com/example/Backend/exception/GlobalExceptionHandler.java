@@ -11,39 +11,45 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.Backend.dto.response.ApiResponse;
 
-/**
- * @RestControllerAdvice = "penjaga gerbang" untuk semua Controller.
- * Kalau di controller manapun terjadi exception, request akan otomatis
- * dilempar ke sini, jadi kita tidak perlu try-catch berulang di tiap method.
- */
+import lombok.extern.slf4j.Slf4j;
+
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    // Ditangkap ketika kita sengaja throw ResourceNotFoundException, misal customer tidak ketemu
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleNotFound(ResourceNotFoundException ex) {
+        log.warn("Resource not found: {}", ex.getMessage());
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND) // otomatis balikin HTTP 404
+                .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    // Ditangkap otomatis ketika validasi @NotBlank/@NotNull/dll di DTO gagal
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBadRequest(IllegalArgumentException ex) {
+        log.warn("Bad request: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
 
+        log.warn("Validasi gagal: {}", errors);
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST) // HTTP 400
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error("Validasi gagal: " + errors));
     }
 
-    // Jaring pengaman terakhir untuk error tak terduga lainnya
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneral(Exception ex) {
+        log.error("Terjadi kesalahan: ", ex);
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR) // HTTP 500
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Terjadi kesalahan: " + ex.getMessage()));
     }
 }

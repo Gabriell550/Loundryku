@@ -97,8 +97,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order getOrderByInvoiceNumber(String invoiceNumber) {
+        Order order = orderRepository.findByInvoiceNumber(invoiceNumber);
+        if (order == null) {
+            throw new ResourceNotFoundException("Order dengan invoice " + invoiceNumber + " tidak ditemukan");
+        }
+        return order;
+    }
+
+    @Override
+    public List<Order> searchOrders(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return orderRepository.findAll();
+        }
+        return orderRepository.searchByCustomerName(query.trim());
+    }
+
+    @Override
     public Order updateStatus(String id, OrderStatus status) {
-        Order order = getOrderById(id); // reuse method di atas, sekalian validasi order ada atau tidak
+        Order order = getOrderById(id);
         order.setStatus(status);
         order.setUpdatedAt(LocalDateTime.now());
         return orderRepository.save(order);
@@ -110,10 +127,11 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-    // Contoh sederhana generate nomor invoice: INV-20260711-<4 digit acak>
     private String generateInvoiceNumber() {
         String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        int random = (int) (Math.random() * 9000) + 1000;
-        return "INV-" + datePart + "-" + random;
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        long count = orderRepository.countByCreatedAtBetween(startOfDay, endOfDay);
+        return "INV-" + datePart + "-" + String.format("%04d", count + 1);
     }
 }
