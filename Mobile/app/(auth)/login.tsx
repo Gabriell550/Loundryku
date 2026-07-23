@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert, // ✅ Tambahkan Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,12 +14,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store'; // ✅ Import SecureStore
 
 import GlassCard from '../components/ui/GlassCard';
 import GlassInput from '../components/ui/GlassInput';
 import PillButton from '../components/ui/PillButton';
 import { colors, gradients, spacing, typography } from '../constants/theme';
 import { loginSchema, LoginFormData } from '../schemas/AuthSchema';
+
+// ✅ Ganti URL ini dengan URL IP lokal komputer Anda atau domain server Spring Boot
+// Contoh jika pakai emulator Android: http://10.0.2.2:8080
+// Contoh jika pakai device fisik (Wi-Fi sama): http://192.168.1.xxx:8080
+const API_BASE_URL = 'http://192.168.100.179:8080'; 
 
 export default function LoginScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,21 +36,52 @@ export default function LoginScreen() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { username: '', password: '' },
   });
 
+  // ✅ Fungsi onSubmit yang sudah diintegrasikan dengan API
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true);
 
-    // TODO: Ganti bagian ini dengan pemanggilan API asli setelah backend siap.
-    // Endpoint sesuai PRD: POST /api/auth/login { email, password }
-    // Response yang diharapkan berisi JWT token untuk disimpan (mis. via expo-secure-store)
-    console.log('Login payload (dummy):', data);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      // Hit endpoint POST /api/auth/login sesuai PRD
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          username: data.username, // Gunakan username atau email sesuai kebutuhan backend
+          password: data.password,
+        }),
+      });
 
-    setIsSubmitting(false);
-    router.replace("/(tabs)"); // arahkan ke Dashboard setelah login berhasil
+      const result = await response.json();
+      console.log('Response dari backend:', result);
+
+      if (response.ok && result.success) {
+        const { token, username, fullName, role } = result.data;
+
+        await SecureStore.setItemAsync('userToken', token);
+        await SecureStore.setItemAsync('userUsername', username);
+        await SecureStore.setItemAsync('userFullName', fullName);
+        await SecureStore.setItemAsync('userRole', role);
+
+        router.replace("/(tabs)");
+      } else {
+        // Jika login gagal (Status 401/400)
+        Alert.alert("Login Gagal", result.message || "Email atau password salah.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error Jaringan", "Gagal terhubung ke server. Pastikan backend sudah berjalan.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // ... (Sisa kode return dan styles tetap sama seperti yang Anda miliki)
 
   return (
     <LinearGradient colors={gradients.loginBackground} style={styles.flex}>
@@ -71,24 +109,24 @@ export default function LoginScreen() {
             <GlassCard style={styles.card}>
               <Text style={styles.title}>Masuk sebagai Kasir</Text>
               <Text style={styles.subtitle}>
-                Masukan Email dan Password.
+                Masukan Username dan Password.
               </Text>
 
               <Controller
                 control={control}
-                name="email"
+                name="username"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <GlassInput
-                    label="Email"
-                    icon="mail-outline"
-                    placeholder="kasir@laundriflow.com"
-                    keyboardType="email-address"
+                    label="Username"
+                    icon="person-outline"
+                    placeholder="kasir"
+                    keyboardType="default"
                     autoCapitalize="none"
                     autoCorrect={false}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.email?.message}
+                    error={errors.username?.message}
                   />
                 )}
               />
