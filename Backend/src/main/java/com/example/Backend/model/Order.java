@@ -38,6 +38,7 @@ public class Order {
 
     private Double totalPrice;
 
+
     @Builder.Default
     private OrderStatus status = OrderStatus.DITERIMA;
 

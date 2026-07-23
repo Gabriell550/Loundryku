@@ -22,7 +22,9 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     public ServiceType createServiceType(ServiceTypeRequest request) {
         ServiceType serviceType = ServiceType.builder()
                 .name(request.getName())
-                .unit(request.getUnit())
+                .processing(request.getProcessing())
+                .weight(request.getWeight())
+                .estimation(request.getEstimation())
                 .price(request.getPrice())
                 .build();
         return serviceTypeRepository.save(serviceType);
@@ -43,7 +45,9 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     public ServiceType updateServiceType(String id, ServiceTypeRequest request) {
         ServiceType serviceType = getServiceTypeById(id);
         serviceType.setName(request.getName());
-        serviceType.setUnit(request.getUnit());
+        serviceType.setProcessing(request.getProcessing());
+        serviceType.setWeight(request.getWeight());
+        serviceType.setEstimation(request.getEstimation());
         serviceType.setPrice(request.getPrice());
         return serviceTypeRepository.save(serviceType);
     }

@@ -26,6 +26,7 @@ public class OrderResponse {
     private String customerName;
     private List<OrderItem> items;
     private Double totalPrice;
+    private String estimation;
     private OrderStatus status;
     private PaymentStatus paymentStatus;
     private String paymentMethod;

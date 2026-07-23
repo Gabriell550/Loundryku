@@ -23,6 +23,8 @@ public class ServiceType {
     private String id;
 
     private String name;   // nama layanan, misal "Cuci Reguler"
-    private String unit;   // satuan, misal "kg" atau "pcs"
+    private String processing; // jenis proses, misal "Reguler", "Kilat", "Express"
+    private String weight;   // satuan, misal "kg" atau "pcs"
+    private String estimation; // estimasi waktu selesai, misal "2 hari" atau "3 jam"
     private Double price;  // harga per satuan
 }

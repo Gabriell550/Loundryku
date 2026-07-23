@@ -48,7 +48,7 @@ body:
 
       "name": "Cuci Express",
 
-      "unit": "kg",
+      "weight": "kg",
 
       "price": 7000
 

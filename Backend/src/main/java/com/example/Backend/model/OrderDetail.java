@@ -13,7 +13,9 @@ public class OrderDetail {
 
     private String serviceTypeId;
     private String serviceTypeName;
+    private String processing;
     private Double qty;
+    private String estimation;
     private Double price;
     private Double subtotal;
 
@@ -21,7 +23,9 @@ public class OrderDetail {
         return OrderDetail.builder()
                 .serviceTypeId(item.getServiceTypeId())
                 .serviceTypeName(item.getServiceTypeName())
+                .processing(item.getProcessing())
                 .qty(item.getQty())
+                .estimation(item.getEstimation())
                 .price(item.getPrice())
                 .subtotal(item.getSubtotal())
                 .build();

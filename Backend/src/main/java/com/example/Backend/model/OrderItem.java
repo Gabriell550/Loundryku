@@ -19,7 +19,9 @@ public class OrderItem {
 
     private String serviceTypeId;   // referensi ke ServiceType
     private String serviceTypeName; // disalin/denormalisasi biar tidak perlu join saat tampilkan struk
+    private String processing;      // Reguler, Kilat, Express"
     private Double qty;             // jumlah (kg atau pcs)
+    private String estimation;        // estimasi selesai, contoh: "2 hari" atau "3 jam"
     private Double price;           // harga satuan saat transaksi (disalin, jaga-jaga kalau harga master berubah)
     private Double subtotal;        // qty * price
 }
