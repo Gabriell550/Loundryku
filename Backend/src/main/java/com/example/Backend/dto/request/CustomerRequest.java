@@ -12,5 +12,8 @@ public class CustomerRequest {
     @NotBlank(message = "phone wajib diisi")
     private String phone;
 
-    private String address; // opsional, tidak wajib
+    private String address;
+
+    @NotBlank(message = "type wajib diisi")
+    private String type;
 }

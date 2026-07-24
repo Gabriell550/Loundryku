@@ -1,0 +1,42 @@
+import API_BASE_URL from '../../constants/api';
+import * as SecureStore from 'expo-secure-store';
+
+async function getToken(): Promise<string | null> {
+  return SecureStore.getItemAsync('userToken');
+}
+
+async function request<T>(
+  method: string,
+  path: string,
+  body?: unknown,
+): Promise<{ success: boolean; message: string; data: T }> {
+  const token = await getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json.message || 'Terjadi kesalahan');
+  }
+
+  return json;
+}
+
+export const api = {
+  get: <T>(path: string) => request<T>('GET', path),
+  post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
+  put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body),
+  patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body),
+  delete: <T>(path: string) => request<T>('DELETE', path),
+};

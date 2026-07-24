@@ -60,6 +60,8 @@ public class OrderServiceImpl implements OrderService {
                     return OrderItem.builder()
                             .serviceTypeId(serviceType.getId())
                             .serviceTypeName(serviceType.getName())
+                            .processing(serviceType.getProcessing())
+                            .estimation(serviceType.getEstimation())
                             .qty(itemReq.getQty())
                             .price(serviceType.getPrice())
                             .subtotal(subtotal)
