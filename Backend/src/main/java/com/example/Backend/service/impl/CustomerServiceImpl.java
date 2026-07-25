@@ -24,7 +24,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .name(request.getName())
                 .phone(request.getPhone())
                 .address(request.getAddress())
-                .type(request.getType())
                 .build();
         return customerRepository.save(customer);
     }
@@ -46,7 +45,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setName(request.getName());
         customer.setPhone(request.getPhone());
         customer.setAddress(request.getAddress());
-        customer.setType(request.getType());
         return customerRepository.save(customer); // karena id sudah ada, ini otomatis jadi UPDATE bukan INSERT
     }
 

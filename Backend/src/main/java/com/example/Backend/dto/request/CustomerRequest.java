@@ -14,6 +14,4 @@ public class CustomerRequest {
 
     private String address;
 
-    @NotBlank(message = "type wajib diisi")
-    private String type;
 }
