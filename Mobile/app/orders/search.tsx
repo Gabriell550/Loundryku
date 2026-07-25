@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { BlurView } from 'expo-blur';
 
+import { toast } from '../../contexts/ToastContext';
 import { colors, gradients, spacing, typography } from '../../constants/theme';
 import { orderService } from '../services/orderService';
 import type { Order } from '../types';
@@ -28,9 +29,9 @@ export default function SearchOrderScreen() {
     try {
       const res = await orderService.search(query);
       if (res.success) setResults(res.data);
-    } catch {
-      Alert.alert('Error', 'Gagal mencari order.');
-    }
+      } catch {
+        toast({ type: 'error', message: 'Gagal mencari order.' });
+      }
   };
 
   const handleSelect = (order: Order) => {

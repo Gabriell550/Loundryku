@@ -17,6 +17,7 @@ import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { z } from 'zod';
 
+import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
 import GlassInput from '../../components/ui/GlassInput';
 import PillButton from '../../components/ui/PillButton';
@@ -51,20 +52,27 @@ export default function LoginScreen() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      let result: any;
+      try {
+        result = await response.json();
+      } catch {
+        toast({ type: 'error', message: 'Gagal memproses respons server.' });
+        return;
+      }
 
-      if (response.ok && result.success) {
+      if (response.ok && result?.success) {
         const { token, username, fullName, role } = result.data;
         await SecureStore.setItemAsync('userToken', token);
         await SecureStore.setItemAsync('userUsername', username);
         await SecureStore.setItemAsync('userFullName', fullName);
         await SecureStore.setItemAsync('userRole', role);
+        toast({ type: 'success', title: 'Berhasil', message: `Selamat datang, ${fullName}!` });
         router.replace('/(tabs)');
       } else {
-        Alert.alert('Login Gagal', result.message || 'Username atau password salah.');
+        toast({ type: 'error', title: 'Login Gagal', message: result.message || 'Username atau password salah.' });
       }
     } catch {
-      Alert.alert('Error', 'Gagal terhubung ke server.');
+      toast({ type: 'error', message: 'Gagal terhubung ke server.' });
     } finally {
       setIsSubmitting(false);
     }

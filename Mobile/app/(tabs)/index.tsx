@@ -18,6 +18,7 @@ import * as SecureStore from 'expo-secure-store';
 import { colors, typography } from '../../constants/theme';
 import { dashboardService } from '../services/dashboardService';
 import type { DashboardData } from '../types';
+import SwipeableTabScreen from '../../components/SwipeableTabScreen';
 
 function formatRupiah(n: number) {
   return 'Rp ' + n.toLocaleString('id-ID');
@@ -75,18 +76,22 @@ export default function DashboardScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <SwipeableTabScreen index={0}>
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </SwipeableTabScreen>
     );
   }
 
   const recentOrders = data?.recentOrders ?? [];
 
   return (
+    <SwipeableTabScreen index={0}>
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 50 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.header}>
@@ -150,7 +155,7 @@ export default function DashboardScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.gradientCard}
           >
-            <Ionicons name="add-square-outline" size={28} color="#ffffff" />
+            <Ionicons name="add-circle-outline" size={28} color="#ffffff" />
             <Text style={styles.quickAccessTextLight}>Tambah Order</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -223,8 +228,9 @@ export default function DashboardScreen() {
         )}
       </View>
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 20 }} />
     </ScrollView>
+    </SwipeableTabScreen>
   );
 }
 

@@ -15,6 +15,7 @@ import {
 } from '@expo-google-fonts/inter';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors } from '../constants/theme';
+import { ToastProvider } from '../contexts/ToastContext';
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -44,7 +45,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ToastProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
         <Stack.Screen name="index" />
@@ -59,7 +60,7 @@ export default function RootLayout() {
         <Stack.Screen name="reports/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="reports/[period]" options={{ animation: 'slide_from_right' }} />
       </Stack>
-    </>
+    </ToastProvider>
   );
 }
 

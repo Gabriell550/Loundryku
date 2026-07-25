@@ -9,6 +9,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 
+import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
 import GlassInput from '../../components/ui/GlassInput';
 import PillButton from '../../components/ui/PillButton';
@@ -52,7 +53,7 @@ export default function PaymentScreen() {
           setValue('amount', res.data.totalPrice.toString());
         }
       } catch {
-        Alert.alert('Error', 'Gagal memuat data order');
+        toast({ type: 'error', message: 'Gagal memuat data order' });
         router.back();
       } finally {
         setLoading(false);
@@ -64,7 +65,7 @@ export default function PaymentScreen() {
   const onSubmit = async (data: PaymentFormData) => {
     const amount = parseFloat(data.amount);
     if (!amount || amount <= 0) {
-      Alert.alert('Error', 'Jumlah pembayaran tidak valid');
+      toast({ type: 'warning', message: 'Jumlah pembayaran tidak valid' });
       return;
     }
     setIsSubmitting(true);
@@ -75,14 +76,13 @@ export default function PaymentScreen() {
         method: selectedMethod,
       });
       if (res.success) {
-        Alert.alert('Berhasil', 'Pembayaran berhasil!', [
-          { text: 'OK', onPress: () => router.replace(`/orders/${orderId}`) },
-        ]);
+        toast({ type: 'success', title: 'Berhasil', message: 'Pembayaran berhasil!' });
+        router.replace(`/orders/${orderId}`);
       } else {
-        Alert.alert('Gagal', res.message);
+        toast({ type: 'error', title: 'Gagal', message: res.message });
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      toast({ type: 'error', title: 'Error', message: error.message });
     } finally {
       setIsSubmitting(false);
     }

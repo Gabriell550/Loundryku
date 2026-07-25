@@ -5,17 +5,20 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors } from '../constants/theme';
 
 export default function Index() {
-  const [status, setStatus] = useState<'loading' | 'auth' | 'no-auth'>('loading');
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    async function check() {
-      const token = await SecureStore.getItemAsync('userToken');
-      setStatus(token ? 'auth' : 'no-auth');
+    async function clearSession() {
+      await SecureStore.deleteItemAsync('userToken');
+      await SecureStore.deleteItemAsync('userUsername');
+      await SecureStore.deleteItemAsync('userFullName');
+      await SecureStore.deleteItemAsync('userRole');
+      setReady(true);
     }
-    check();
+    clearSession();
   }, []);
 
-  if (status === 'loading') {
+  if (!ready) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -23,7 +26,7 @@ export default function Index() {
     );
   }
 
-  return <Redirect href={status === 'auth' ? '/(tabs)' : '/(auth)/login'} />;
+  return <Redirect href="/(auth)/login" />;
 }
 
 const styles = StyleSheet.create({

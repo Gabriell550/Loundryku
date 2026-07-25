@@ -1,6 +1,16 @@
 import API_BASE_URL from '../../constants/api';
 import * as SecureStore from 'expo-secure-store';
 
+let isRedirecting = false;
+
+async function handleAuthError() {
+  if (isRedirecting) return;
+  isRedirecting = true;
+  await SecureStore.deleteItemAsync('userToken');
+  const { router } = await import('expo-router');
+  router.replace('/(auth)/login');
+}
+
 async function getToken(): Promise<string | null> {
   return SecureStore.getItemAsync('userToken');
 }
@@ -24,10 +34,25 @@ async function request<T>(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const json = await res.json();
-
   if (!res.ok) {
-    throw new Error(json.message || 'Terjadi kesalahan');
+    if (res.status === 401 || res.status === 403) {
+      await handleAuthError();
+      throw new Error('Sesi telah berakhir. Silakan login ulang.');
+    }
+    let json: any;
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error(res.statusText || 'Terjadi kesalahan');
+    }
+    throw new Error(json?.message || 'Terjadi kesalahan');
+  }
+
+  let json: any;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(res.statusText || 'Gagal memproses respons server');
   }
 
   return json;

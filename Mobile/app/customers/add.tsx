@@ -7,7 +7,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { z } from 'zod';
 
+import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
 import GlassInput from '../../components/ui/GlassInput';
 import PillButton from '../../components/ui/PillButton';
@@ -55,14 +55,13 @@ export default function AddCustomerScreen() {
     try {
       const res = await customerService.create(data);
       if (res.success) {
-        Alert.alert('Berhasil', 'Pelanggan baru berhasil ditambahkan!', [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        toast({ type: 'success', title: 'Berhasil', message: 'Pelanggan baru berhasil ditambahkan!' });
+        router.back();
       } else {
-        Alert.alert('Gagal', res.message || 'Gagal menambahkan pelanggan.');
+        toast({ type: 'error', title: 'Gagal', message: res.message || 'Gagal menambahkan pelanggan.' });
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Gagal terhubung ke server.');
+      toast({ type: 'error', title: 'Error', message: error.message || 'Gagal terhubung ke server.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -141,26 +140,7 @@ export default function AddCustomerScreen() {
                 )}
               />
 
-              <View style={styles.typeContainer}>
-                <Text style={styles.typeLabel}>Tipe Pelanggan</Text>
-                <View style={styles.pillsRow}>
-                  {CUSTOMER_TYPES.map((type) => {
-                    const isSelected = selectedType === type;
-                    return (
-                      <TouchableOpacity
-                        key={type}
-                        style={[styles.pillItem, isSelected && styles.pillItemSelected]}
-                        onPress={() => setValue('type', type)}
-                      >
-                        <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
-                          {type}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-                {errors.type && <Text style={styles.errorText}>{errors.type.message}</Text>}
-              </View>
+             
 
               <View style={styles.buttonSpacing}>
                 <PillButton title="Simpan Pelanggan" onPress={handleSubmit(onSubmit)} loading={isSubmitting} />

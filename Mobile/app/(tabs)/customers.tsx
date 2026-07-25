@@ -14,9 +14,11 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 
+import { toast } from '../../contexts/ToastContext';
 import { colors } from '../../constants/theme';
 import { customerService } from '../services/customerService';
 import type { Customer } from '../types';
+import SwipeableTabScreen from '../../components/SwipeableTabScreen';
 
 export default function CustomersScreen() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -71,8 +73,9 @@ export default function CustomersScreen() {
           try {
             await customerService.delete(id);
             setCustomers((prev) => prev.filter((c) => c.id !== id));
+            toast({ type: 'success', message: 'Pelanggan berhasil dihapus.' });
           } catch {
-            Alert.alert('Gagal', 'Gagal menghapus pelanggan.');
+            toast({ type: 'error', message: 'Gagal menghapus pelanggan.' });
           }
         },
       },
@@ -80,6 +83,7 @@ export default function CustomersScreen() {
   };
 
   return (
+    <SwipeableTabScreen index={2}>
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Pelanggan</Text>
@@ -110,7 +114,9 @@ export default function CustomersScreen() {
         </View>
       ) : (
         <ScrollView
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           {customers.length === 0 ? (
@@ -149,6 +155,7 @@ export default function CustomersScreen() {
         </ScrollView>
       )}
     </View>
+    </SwipeableTabScreen>
   );
 }
 

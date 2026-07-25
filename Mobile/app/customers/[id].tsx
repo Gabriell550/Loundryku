@@ -10,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
+import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
 import GlassInput from '../../components/ui/GlassInput';
 import PillButton from '../../components/ui/PillButton';
@@ -73,14 +74,13 @@ export default function EditCustomerScreen() {
     try {
       const res = await customerService.update(id, data);
       if (res.success) {
-        Alert.alert('Berhasil', 'Data pelanggan berhasil diperbarui!', [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        toast({ type: 'success', title: 'Berhasil', message: 'Data pelanggan berhasil diperbarui!' });
+        router.back();
       } else {
-        Alert.alert('Gagal', res.message);
+        toast({ type: 'error', title: 'Gagal', message: res.message });
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      toast({ type: 'error', title: 'Error', message: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -93,12 +93,15 @@ export default function EditCustomerScreen() {
         text: 'Hapus', style: 'destructive',
         onPress: async () => {
           try {
-            await customerService.delete(id);
-            Alert.alert('Berhasil', 'Pelanggan berhasil dihapus.', [
-              { text: 'OK', onPress: () => router.back() },
-            ]);
+            const res = await customerService.delete(id);
+            if (res.success) {
+              toast({ type: 'success', message: 'Pelanggan berhasil dihapus.' });
+              router.back();
+            } else {
+              toast({ type: 'error', message: 'Gagal menghapus pelanggan.' });
+            }
           } catch {
-            Alert.alert('Gagal', 'Gagal menghapus pelanggan.');
+            toast({ type: 'error', message: 'Gagal menghapus pelanggan.' });
           }
         },
       },
@@ -152,20 +155,6 @@ export default function EditCustomerScreen() {
               )}
             />
 
-            <View style={styles.typeContainer}>
-              <Text style={styles.typeLabel}>Tipe Pelanggan</Text>
-              <View style={styles.pillsRow}>
-                {CUSTOMER_TYPES.map((type) => (
-                  <TouchableOpacity
-                    key={type}
-                    style={[styles.pillItem, selectedType === type && styles.pillItemSelected]}
-                    onPress={() => setValue('type', type)}
-                  >
-                    <Text style={[styles.pillText, selectedType === type && styles.pillTextSelected]}>{type}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
 
             <View style={styles.buttonSpacing}>
               <PillButton title="Simpan Perubahan" onPress={handleSubmit(onSubmit)} loading={isSubmitting} />

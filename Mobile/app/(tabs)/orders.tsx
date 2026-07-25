@@ -15,6 +15,7 @@ import { router, useFocusEffect } from 'expo-router';
 
 import { colors, typography } from '../../constants/theme';
 import { orderService } from '../services/orderService';
+import SwipeableTabScreen from '../../components/SwipeableTabScreen';
 import type { Order } from '../types';
 
 function formatRupiah(n: number) {
@@ -79,6 +80,7 @@ export default function OrdersScreen() {
   };
 
   return (
+    <SwipeableTabScreen index={1}>
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Daftar Order</Text>
@@ -109,7 +111,9 @@ export default function OrdersScreen() {
         </View>
       ) : (
         <ScrollView
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           {orders.length === 0 ? (
@@ -151,6 +155,7 @@ export default function OrdersScreen() {
         </ScrollView>
       )}
     </View>
+    </SwipeableTabScreen>
   );
 }
 

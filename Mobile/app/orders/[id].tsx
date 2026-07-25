@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
 import PillButton from '../../components/ui/PillButton';
 import { colors, gradients, spacing, typography } from '../../constants/theme';
@@ -49,7 +50,7 @@ export default function OrderDetailScreen() {
       const res = await orderService.getById(id);
       if (res.success) setOrder(res.data);
     } catch {
-      Alert.alert('Error', 'Gagal memuat detail order');
+      toast({ type: 'error', message: 'Gagal memuat detail order' });
       router.back();
     } finally {
       setLoading(false);
@@ -66,7 +67,7 @@ export default function OrderDetailScreen() {
             const res = await orderService.updateStatus(id, newStatus);
             if (res.success) setOrder(res.data);
           } catch {
-            Alert.alert('Gagal', 'Gagal mengubah status.');
+              toast({ type: 'error', title: 'Gagal', message: 'Gagal mengubah status.' });
           }
         },
       },

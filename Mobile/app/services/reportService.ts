@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { ReportData, ApiResponse } from '../types';
+import type { ReportData } from '../types';
 
 export const reportService = {
   daily: () => api.get<ReportData>('/api/reports/daily'),

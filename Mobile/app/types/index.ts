@@ -57,6 +57,13 @@ export interface DashboardData {
   recentOrders: Order[];
 }
 
+export interface ChartDataPoint {
+  label: string;
+  revenue: number;
+  orders: number;
+  customers: number;
+}
+
 export interface ReportData {
   period: string;
   startDate: string;

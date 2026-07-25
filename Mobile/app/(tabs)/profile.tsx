@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
+import { toast } from '../../contexts/ToastContext';
 import { colors } from '../../constants/theme';
+import SwipeableTabScreen from '../../components/SwipeableTabScreen';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState({ fullName: '', username: '', role: '' });
@@ -38,7 +40,8 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <SwipeableTabScreen index={3}>
+    <ScrollView style={[styles.container, { flex: 1 }]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profil</Text>
       </View>
@@ -82,6 +85,7 @@ export default function ProfileScreen() {
 
       <Text style={styles.version}>LaundriFlow v1.0.0</Text>
     </ScrollView>
+    </SwipeableTabScreen>
   );
 }
 
