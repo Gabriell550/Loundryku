@@ -23,7 +23,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
         ServiceType serviceType = ServiceType.builder()
                 .name(request.getName())
                 .processing(request.getProcessing())
-                .weight(request.getWeight())
+                .unit(request.getunit())
                 .estimation(request.getEstimation())
                 .price(request.getPrice())
                 .build();
@@ -46,7 +46,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
         ServiceType serviceType = getServiceTypeById(id);
         serviceType.setName(request.getName());
         serviceType.setProcessing(request.getProcessing());
-        serviceType.setWeight(request.getWeight());
+        serviceType.setunit(request.getunit());
         serviceType.setEstimation(request.getEstimation());
         serviceType.setPrice(request.getPrice());
         return serviceTypeRepository.save(serviceType);

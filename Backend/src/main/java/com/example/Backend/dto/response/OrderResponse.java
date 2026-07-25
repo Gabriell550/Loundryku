@@ -31,6 +31,9 @@ public class OrderResponse {
     private String paymentMethod;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime estimatedCompletionTime;
+    private LocalDateTime completedAt;
+    private LocalDateTime pickedUpAt;
 
     public static OrderResponse fromOrder(Order order) {
         return OrderResponse.builder()
@@ -45,6 +48,9 @@ public class OrderResponse {
                 .paymentMethod(order.getPaymentMethod())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .estimatedCompletionTime(order.getEstimatedCompletionTime())
+                .completedAt(order.getCompletedAt())
+                .pickedUpAt(order.getPickedUpAt())
                 .build();
     }
 }

@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * Bentuk data JSON yang dikirim client saat membuat order baru, contoh:
  * {
@@ -26,4 +28,6 @@ public class OrderRequest {
     @NotEmpty(message = "items tidak boleh kosong")
     @Valid // penting! supaya validasi di dalam OrderItemRequest ikut dijalankan
     private List<OrderItemRequest> items;
+
+    private LocalDateTime estimatedCompletionTime; //boleh null, diisi saat order diterima
 }

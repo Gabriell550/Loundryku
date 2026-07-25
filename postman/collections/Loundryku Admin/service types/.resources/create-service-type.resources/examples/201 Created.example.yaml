@@ -18,7 +18,7 @@ response:
         "data": {
           "id": "21",
           "name": "Cuci Reguler",
-          "weight": "kg",
+          "unit": "kg",
           "price": 5000
         }
       }
