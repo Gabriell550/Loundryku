@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator,
+  ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
@@ -17,6 +19,7 @@ import { colors, gradients, spacing, typography } from '../../constants/theme';
 import { orderService } from '../services/orderService';
 import { paymentService } from '../services/paymentService';
 import type { Order } from '../types';
+import { generateReceiptHtml } from '../components/ReceiptHtml';
 
 function formatRupiah(n: number) {
   return 'Rp ' + n.toLocaleString('id-ID');
@@ -98,6 +101,34 @@ export default function PaymentScreen() {
     );
   }
 
+  const handlePrint = async () => {
+    try {
+      const html = generateReceiptHtml(order);
+      await Print.printAsync({ html });
+    } catch (err: any) {
+      toast({ type: 'error', message: err.message || 'Gagal mencetak' });
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      const html = generateReceiptHtml(order);
+      const { uri } = await Print.printToFileAsync({ html });
+      const isSharingAvailable = await Sharing.isAvailableAsync();
+      if (isSharingAvailable) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: `Struk ${order.invoiceNumber}`,
+          UTI: 'com.adobe.pdf',
+        });
+      } else {
+        toast({ type: 'warning', message: 'Sharing tidak tersedia di perangkat ini' });
+      }
+    } catch (err: any) {
+      toast({ type: 'error', message: err.message || 'Gagal download PDF' });
+    }
+  };
+
   if (order.paymentStatus === 'LUNAS') {
     return (
       <LinearGradient colors={gradients.loginBackground} style={styles.flex}>
@@ -109,10 +140,72 @@ export default function PaymentScreen() {
             <Text style={styles.headerTitle}>Pembayaran</Text>
             <View style={styles.iconButton} />
           </View>
-          <View style={styles.centerContent}>
-            <Ionicons name="checkmark-circle" size={64} color="#34C759" />
-            <Text style={styles.paidText}>Order sudah LUNAS</Text>
-          </View>
+          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <GlassCard style={styles.card}>
+              <View style={styles.paidHeader}>
+                <Ionicons name="checkmark-circle" size={48} color="#34C759" />
+                <Text style={styles.paidTitle}>Pembayaran Berhasil</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>No. Invoice</Text>
+                <Text style={styles.receiptValue}>{order.invoiceNumber}</Text>
+              </View>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Pelanggan</Text>
+                <Text style={styles.receiptValue}>{order.customerName}</Text>
+              </View>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Tanggal</Text>
+                <Text style={styles.receiptValue}>
+                  {new Date(order.updatedAt || order.createdAt).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+                  })}
+                </Text>
+              </View>
+              <View style={styles.receiptRow}>
+                <Text style={styles.receiptLabel}>Pembayaran</Text>
+                <Text style={styles.receiptValue}>{order.paymentMethod === 'CASH' ? 'Tunai' : 'Transfer'}</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <Text style={styles.sectionLabel}>ITEM LAYANAN</Text>
+              {order.items.map((item, idx) => (
+                <View key={idx} style={styles.receiptItemRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.receiptItemName}>{item.serviceTypeName}</Text>
+                    <Text style={styles.receiptItemDetail}>
+                      {item.qty} kg x {formatRupiah(item.price)}
+                    </Text>
+                  </View>
+                  <Text style={styles.receiptItemSubtotal}>{formatRupiah(item.subtotal)}</Text>
+                </View>
+              ))}
+
+              <View style={styles.divider} />
+
+              <View style={styles.receiptTotalRow}>
+                <Text style={styles.receiptTotalLabel}>Total Dibayar</Text>
+                <Text style={styles.receiptTotalValue}>{formatRupiah(order.totalPrice)}</Text>
+              </View>
+            </GlassCard>
+
+            <View style={styles.receiptActions}>
+              <TouchableOpacity style={styles.actionBtn} onPress={handlePrint}>
+                <Ionicons name="print-outline" size={20} color="#ffffff" />
+                <Text style={styles.actionBtnText}>Cetak Struk</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionBtn, styles.actionBtnSecondary]} onPress={handleDownloadPdf}>
+                <Ionicons name="download-outline" size={20} color={colors.primary} />
+                <Text style={[styles.actionBtnText, { color: colors.primary }]}>Download PDF</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ height: 20 }} />
+          </ScrollView>
         </SafeAreaView>
       </LinearGradient>
     );
@@ -216,4 +309,33 @@ const styles = StyleSheet.create({
   buttonSpacing: { marginTop: spacing.stackLg },
   centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 },
   paidText: { fontFamily: 'Montserrat_700Bold', fontSize: 18, color: '#34C759' },
+
+  paidHeader: { alignItems: 'center', gap: 8, marginBottom: 8 },
+  paidTitle: { fontFamily: 'Montserrat_700Bold', fontSize: 18, color: '#34C759' },
+  divider: { height: 1, backgroundColor: '#e0e0e0', marginVertical: 16 },
+  receiptRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8,
+  },
+  receiptLabel: { fontFamily: 'Inter_400Regular', fontSize: 13, color: '#727786' },
+  receiptValue: { fontFamily: 'Inter_600SemiBold', fontSize: 13, color: '#191c1e', textAlign: 'right', flex: 1, marginLeft: 16 },
+  receiptItemRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10,
+  },
+  receiptItemName: { fontFamily: 'Inter_600SemiBold', fontSize: 13, color: '#191c1e' },
+  receiptItemDetail: { fontFamily: 'Inter_400Regular', fontSize: 11, color: '#727786', marginTop: 2 },
+  receiptItemSubtotal: { fontFamily: 'Montserrat_700Bold', fontSize: 13, color: '#191c1e' },
+  receiptTotalRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+  },
+  receiptTotalLabel: { fontFamily: 'Montserrat_700Bold', fontSize: 16, color: '#191c1e' },
+  receiptTotalValue: { fontFamily: 'Montserrat_700Bold', fontSize: 20, color: colors.primary },
+  receiptActions: { flexDirection: 'row', gap: 12, marginTop: 8 },
+  actionBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    backgroundColor: colors.primary, paddingVertical: 14, borderRadius: 24,
+  },
+  actionBtnSecondary: {
+    backgroundColor: '#ffffff', borderWidth: 2, borderColor: colors.primary,
+  },
+  actionBtnText: { fontFamily: 'Inter_700Bold', fontSize: 13, color: '#ffffff' },
 });

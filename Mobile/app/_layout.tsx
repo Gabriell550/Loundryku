@@ -56,6 +56,7 @@ export default function RootLayout() {
         <Stack.Screen name="orders/add" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="orders/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="orders/search" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="payments/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="payments/[orderId]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="reports/index" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="reports/[period]" options={{ animation: 'slide_from_right' }} />

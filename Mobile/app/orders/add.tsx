@@ -18,18 +18,18 @@ import GlassCard from '../../components/ui/GlassCard';
 import GlassInput from '../../components/ui/GlassInput';
 import PillButton from '../../components/ui/PillButton';
 import { colors, gradients, spacing, typography } from '../../constants/theme';
-import { orderService } from '../services/orderService';
+import { orderService, serviceTypeService } from '../services/orderService';
 import { customerService } from '../services/customerService';
-import type { Customer } from '../types';
+import type { Customer, ServiceType } from '../types';
 
 function formatRupiah(n: number) {
   return 'Rp ' + n.toLocaleString('id-ID');
 }
 
-type CategoryType = 'Reguler' | 'Kilat' | 'Express' | 'CB';
+type CategoryType = 'Reguler' | 'Kilat' | 'Express';
 type ServiceCode = 'CS' | 'CK' | 'S' | 'CB';
 
-const CATEGORIES: CategoryType[] = ['Reguler', 'Kilat', 'Express', 'CB'];
+const CATEGORIES: CategoryType[] = ['Reguler', 'Kilat', 'Express'];
 
 const SERVICE_NAMES: Record<ServiceCode, string> = {
   CS: 'Cuci Setrika',
@@ -42,8 +42,7 @@ const SERVICE_NAMES: Record<ServiceCode, string> = {
 const PRICING_TABLE: Record<CategoryType, Partial<Record<ServiceCode, number>>> = {
   Reguler: { CS: 6500, CK: 5500, S: 5500 },
   Kilat: { CS: 10000, CK: 7000, S: 8000 },
-  Express: { CS: 13500, CK: 10000, S: 10000 },
-  CB: { CB: 5000 },
+  Express: { CS: 13500, CK: 10000, S: 10000, CB: 5000 },
 };
 
 // Preset Tombol Cepat Berat (kg)
@@ -64,6 +63,7 @@ export default function AddOrderScreen() {
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerPicker, setShowCustomerPicker] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [serviceTypeMap, setServiceTypeMap] = useState<Map<string, ServiceType>>(new Map());
 
   // State Item Layanan
   const [orderItems, setOrderItems] = useState<OrderItemState[]>([
@@ -71,17 +71,27 @@ export default function AddOrderScreen() {
   ]);
 
   useEffect(() => {
-    async function loadCustomers() {
+    async function loadData() {
       try {
-        const res = await customerService.getAll();
-        if (res.success) setCustomers(res.data);
+        const [custRes, stRes] = await Promise.all([
+          customerService.getAll(),
+          serviceTypeService.getAll(),
+        ]);
+        if (custRes.success) setCustomers(custRes.data);
+        if (stRes.success) {
+          const map = new Map<string, ServiceType>();
+          stRes.data.forEach((st) => {
+            map.set(`${st.processing}|${st.name}`, st);
+          });
+          setServiceTypeMap(map);
+        }
       } catch (err) {
-        console.error('Gagal memuat pelanggan:', err);
+        console.error('Gagal memuat data:', err);
       } finally {
         setLoading(false);
       }
     }
-    loadCustomers();
+    loadData();
   }, []);
 
   const filteredCustomers = customers.filter(
@@ -115,15 +125,11 @@ export default function AddOrderScreen() {
 
   const updateCategory = (index: number, category: CategoryType) => {
     const updated = [...orderItems];
-    let defaultCode: ServiceCode = 'CS';
-
-    if (category === 'CB') {
-      defaultCode = 'CB';
-    } else if (updated[index].serviceCode === 'CB') {
-      defaultCode = 'CS';
-    } else {
-      defaultCode = (updated[index].serviceCode as ServiceCode) || 'CS';
-    }
+    const validCodes: ServiceCode[] = category === 'Express'
+      ? ['CS', 'CK', 'S', 'CB']
+      : ['CS', 'CK', 'S'];
+    const currentCode = updated[index].serviceCode as ServiceCode;
+    const defaultCode = validCodes.includes(currentCode) ? currentCode : 'CS';
 
     updated[index] = { ...updated[index], category, serviceCode: defaultCode };
     setOrderItems(updated);
@@ -181,13 +187,18 @@ export default function AddOrderScreen() {
 
     setIsSubmitting(true);
     try {
-      const formattedItems = orderItems.map((i) => ({
-        serviceTypeId: `${i.category}-${i.serviceCode}`,
-        serviceName: `${i.category} - ${i.serviceCode} (${SERVICE_NAMES[i.serviceCode as ServiceCode]})`,
-        pricePerKg: getPricePerKg(i.category, i.serviceCode),
-        qty: parseFloat(i.qty),
-        subtotal: calculateSubtotal(i),
-      }));
+      const formattedItems = orderItems.map((i) => {
+        const serviceName = SERVICE_NAMES[i.serviceCode as ServiceCode];
+        const key = `${i.category}|${serviceName}`;
+        const st = serviceTypeMap.get(key);
+        if (!st) {
+          throw new Error(`Layanan ${i.category} - ${serviceName} tidak ditemukan di database. Hubungi admin.`);
+        }
+        return {
+          serviceTypeId: st.id,
+          qty: parseFloat(i.qty),
+        };
+      });
 
       const res = await orderService.create({
         customerId: selectedCustomer.id,
@@ -319,7 +330,7 @@ export default function AddOrderScreen() {
             {orderItems.map((item, index) => {
               const currentPrice = getPricePerKg(item.category, item.serviceCode);
               const subtotal = calculateSubtotal(item);
-              const availableCodes: ServiceCode[] = item.category === 'CB' ? ['CB'] : ['CS', 'CK', 'S'];
+              const availableCodes: ServiceCode[] = item.category === 'Express' ? ['CS', 'CK', 'S', 'CB'] : ['CS', 'CK', 'S'];
 
               return (
                 <View key={index} style={styles.itemCard}>
@@ -377,27 +388,7 @@ export default function AddOrderScreen() {
                   {/* 3c. INPUT BERAT INTERAKTIF (KASIR FRIENDLY) */}
                   <Text style={styles.subLabel}>c. Input Berat (kg):</Text>
 
-                  {/* Preset Tombol Cepat Berat */}
-                  <View style={styles.presetContainer}>
-                    <Text style={styles.presetHint}>Pilihan Cepat:</Text>
-                    <View style={styles.presetRow}>
-                      {PRESET_WEIGHTS.map((weight) => {
-                        const isSelected = item.qty === weight;
-                        return (
-                          <TouchableOpacity
-                            key={weight}
-                            style={[styles.presetChip, isSelected && styles.presetChipSelected]}
-                            onPress={() => setQuickQty(index, weight)}
-                          >
-                            <Text style={[styles.presetText, isSelected && styles.presetTextSelected]}>
-                              {weight} kg
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </View>
-
+                  
                   {/* Control Stepper (- / +) dan Custom Input */}
                   <View style={styles.weightControlRow}>
                     {/* Tombol Kurangi 0.5kg */}
