@@ -292,7 +292,7 @@ export default function AddOrderScreen() {
 
             {/* 💡 LANGKAH 2: KETERANGAN SINGKATAN */}
             <View style={styles.legendContainer}>
-              <Text style={styles.legendTitle}>💡 Keterangan Kode Layanan:</Text>
+              <Text style={styles.legendTitle}>Keterangan Kode Layanan:</Text>
               <View style={styles.legendGrid}>
                 <View style={styles.legendBadge}>
                   <Text style={styles.legendCode}>CS</Text>
@@ -313,7 +313,7 @@ export default function AddOrderScreen() {
               </View>
             </View>
 
-            {/* 🧺 LANGKAH 3: RINCIAN ORDER */}
+            {/* LANGKAH 3: RINCIAN ORDER */}
             <Text style={[styles.sectionLabel, { marginTop: 18 }]}>2. RINCIAN LAYANAN & BERAT</Text>
 
             {orderItems.map((item, index) => {

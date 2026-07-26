@@ -371,7 +371,7 @@ body:
   content: |-
     {
       "name": "Cuci Reguler",
-      "unit": "kg",
+      "weight": "kg",
       "price": 5000
     }
 post-response:
@@ -402,7 +402,7 @@ post-response:
       pm.test("data penting service type tidak boleh null", function () {
         pm.expect(jsonData.data.id).to.be.a("string").and.not.empty;
         pm.expect(jsonData.data.name).to.be.a("string").and.not.empty;
-        pm.expect(jsonData.data.unit).to.be.a("string").and.not.empty;
+        pm.expect(jsonData.data.weight).to.be.a("string").and.not.empty;
         pm.expect(jsonData.data.price).to.not.eql(null);
       });
 
@@ -567,7 +567,7 @@ body:
   content: |-
     {
       "name": "Cuci Express",
-      "unit": "kg",
+      "weight": "kg",
       "price": 7000
     }
 post-response:

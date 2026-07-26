@@ -17,7 +17,7 @@ export interface ServiceType {
   id: string;
   name: string;
   processing: string;
-  unit: string;
+  weight: string;
   estimation: string;
   price: number;
 }
@@ -27,7 +27,7 @@ export interface OrderItem {
   serviceTypeName: string;
   processing: string;
   qty: number;
-  unit?: string;
+  weight?: string;
   estimation: string;
   price: number;
   subtotal: number;

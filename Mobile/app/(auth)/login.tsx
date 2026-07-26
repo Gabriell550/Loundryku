@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -10,7 +11,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
@@ -87,10 +87,11 @@ export default function LoginScreen() {
         >
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
             <View style={styles.brandBlock}>
-              <View style={styles.logoCircle}>
-                <Ionicons name="shirt-outline" size={32} color={colors.primary} />
-              </View>
-              <Text style={styles.brandName}>LaundriFlow</Text>
+              <Image
+                source={require('../../assets/images/Logo.png')}
+                style={styles.logoImage}
+              />
+              <Text style={styles.brandName}>Laundri-Ku</Text>
               <Text style={styles.brandTagline}>Digital Laundry Kasir</Text>
             </View>
 
@@ -160,13 +161,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.stackLg,
   },
   brandBlock: { alignItems: 'center', marginBottom: spacing.stackLg },
-  logoCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoImage: {
+    width: 120,
+    height: 120,
     marginBottom: spacing.stackSm,
   },
   brandName: { ...typography.headlineLgMobile, color: colors.onSurface },
