@@ -4,6 +4,8 @@ import {
   GestureResponderEvent,
   StyleSheet,
   Text,
+  ViewStyle, // Added
+  TextStyle, // Added
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable } from 'react-native';
@@ -14,17 +16,19 @@ type PillButtonProps = {
   onPress: (e: GestureResponderEvent) => void;
   loading?: boolean;
   disabled?: boolean;
+  containerStyle?: ViewStyle; // Added containerStyle prop
+  textStyle?: TextStyle; // Added textStyle prop for direct text styling
 };
 
 /**
  * PillButton
  * Tombol utama "Pill" dengan gradient Ocean Blue -> Fluid Aqua (sesuai design.md)
  */
-export default function PillButton({ title, onPress, loading, disabled }: PillButtonProps) {
+export default function PillButton({ title, onPress, loading, disabled, containerStyle, textStyle }: PillButtonProps) {
   const isDisabled = disabled || loading;
 
   return (
-    <Pressable onPress={onPress} disabled={isDisabled} style={({ pressed }) => [pressed && styles.pressed]}>
+    <Pressable onPress={onPress} disabled={isDisabled} style={({ pressed }) => [pressed && styles.pressed, containerStyle]}>
       <LinearGradient
         colors={gradients.oceanToAqua}
         start={{ x: 0, y: 0 }}
@@ -34,7 +38,7 @@ export default function PillButton({ title, onPress, loading, disabled }: PillBu
         {loading ? (
           <ActivityIndicator color={colors.onPrimary} />
         ) : (
-          <Text style={styles.text}>{title}</Text>
+          <Text style={[styles.text, textStyle]}>{title}</Text>
         )}
       </LinearGradient>
     </Pressable>

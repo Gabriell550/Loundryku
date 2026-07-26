@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { colors } from '../constants/theme';
 
 export default function Index() {
@@ -9,12 +9,27 @@ export default function Index() {
 
   useEffect(() => {
     async function clearSession() {
-      await SecureStore.deleteItemAsync('userToken');
-      await SecureStore.deleteItemAsync('userUsername');
-      await SecureStore.deleteItemAsync('userFullName');
-      await SecureStore.deleteItemAsync('userRole');
-      setReady(true);
+      try {
+        if (Platform.OS === 'web') {
+          // Fallback for Web
+          localStorage.removeItem('userToken');
+          localStorage.removeItem('userUsername');
+          localStorage.removeItem('userFullName');
+          localStorage.removeItem('userRole');
+        } else {
+          // SecureStore for iOS and Android
+          await SecureStore.deleteItemAsync('userToken');
+          await SecureStore.deleteItemAsync('userUsername');
+          await SecureStore.deleteItemAsync('userFullName');
+          await SecureStore.deleteItemAsync('userRole');
+        }
+      } catch (error) {
+        console.error("Error clearing session:", error);
+      } finally {
+        setReady(true);
+      }
     }
+    
     clearSession();
   }, []);
 
