@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet,TouchableOpacity} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { Table, Row } from 'react-native-table-component'; // Not used with custom table implementation
 import GlassCard from '../../components/ui/GlassCard';
@@ -12,7 +12,7 @@ export default function UserManagement() {
     { id: "1", nama: "gabriel", email: "gabe@email.com" },
     { id: "2", nama: "agy", email: "agy@gmail.com" },
   ];
-    const columnFlex = [0.5, 1, 1, 1.5]; // Porsi untuk ID, Nama, Email, Aksi
+  const columnFlex = [0.5, 1, 1, 1.5]; // Porsi untuk ID, Nama, Email, Aksi
   return (
     <SafeAreaView style={styles.safeArea}>
       <GlassCard style={styles.card}>
@@ -30,18 +30,18 @@ export default function UserManagement() {
               <Text style={styles.tableCell}>{item.email}</Text>
               <View style={[styles.actionButtons, { flex: 1.5 }]}>
                 <TouchableOpacity
-    style={styles.editButton}
-    onPress={() => console.log('Edit', item.id)}
-  >
-    <Text style={styles.buttonText}>Edit</Text>
-  </TouchableOpacity>
+                  style={styles.editButton}
+                  onPress={() => console.log('Edit', item.id)}
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
 
-  <TouchableOpacity
-    style={styles.deleteButton}
-    onPress={() => console.log('Delete', item.id)}
-  >
-    <Text style={styles.buttonText}>Hapus</Text>
-  </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => console.log('Delete', item.id)}
+                >
+                  <Text style={styles.buttonText}>Hapus</Text>
+                </TouchableOpacity>
               </View>
             </View>
           ))}

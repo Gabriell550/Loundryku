@@ -1,24 +1,30 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native'; // Tambahkan StyleProp
 import { BlurView } from 'expo-blur';
 import { colors, radius } from '../../constants/theme';
 
 type GlassCardProps = {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>; // Ubah agar menerima array styles tanpa error
   intensity?: number;
+  noPadding?: boolean; // Prop baru untuk mencegah bentrok padding
 };
 
 /**
  * GlassCard
- * Container dengan efek "Level 1 Glassmorphic" (70% opacity + blur, radius 24px)
- * sesuai design.md
+ * Container dengan efek "Level 1 Glassmorphic"
  */
-export default function GlassCard({ children, style, intensity = 40 }: GlassCardProps) {
+export default function GlassCard({ children, style, intensity = 40, noPadding = false }: GlassCardProps) {
   return (
     <View style={[styles.shadowWrapper, style]}>
       <BlurView intensity={intensity} tint="light" style={styles.blur}>
-        <View style={styles.overlay}>{children}</View>
+        <View style={[
+          styles.overlay, 
+          // Jika noPadding true, hilangkan padding dan background overlay bawaan
+          noPadding && { padding: 0, backgroundColor: 'transparent' }
+        ]}>
+          {children}
+        </View>
       </BlurView>
     </View>
   );
