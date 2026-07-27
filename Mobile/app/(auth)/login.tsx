@@ -44,46 +44,46 @@ export default function LoginScreen() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
+    // setIsSubmitting(true);
     // START LOGIN SKIP - REMOVE IN PRODUCTION
     // This block bypasses the login logic for testing purposes.
     // In a real scenario, this would be removed, and the actual login API call would be active.
-    router.replace('/(tabs)');
-    setIsSubmitting(false);
-    return;
+    // router.replace('/(tabs)');
+    // setIsSubmitting(false);
+    // return;
     // END LOGIN SKIP
 
-    // try {
-    //   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(data),
-    //   });
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    //   let result: any;
-    //   try {
-    //     result = await response.json();
-    //   } catch {
-    //     toast({ type: 'error', message: 'Gagal memproses respons server.' });
-    //     return;
-    //   }
+      let result: any;
+      try {
+        result = await response.json();
+      } catch {
+        toast({ type: 'error', message: 'Gagal memproses respons server.' });
+        return;
+      }
 
-    //   if (response.ok && result?.success) {
-    //     const { token, username, fullName, role } = result.data;
-    //     await SecureStore.setItemAsync('userToken', token);
-    //     await SecureStore.setItemAsync('userUsername', username);
-    //     await SecureStore.setItemAsync('userFullName', fullName);
-    //     await SecureStore.setItemAsync('userRole', role);
-    //     toast({ type: 'success', title: 'Berhasil', message: `Selamat datang, ${fullName}!` });
-    //     router.replace('/(tabs)');
-    //   } else {
-    //     toast({ type: 'error', title: 'Login Gagal', message: result.message || 'Username atau password salah.' });
-    //   }
-    // } catch {
-    //   toast({ type: 'error', message: 'Gagal terhubung ke server.' });
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
+      if (response.ok && result?.success) {
+        const { token, username, fullName, role } = result.data;
+        await SecureStore.setItemAsync('userToken', token);
+        await SecureStore.setItemAsync('userUsername', username);
+        await SecureStore.setItemAsync('userFullName', fullName);
+        await SecureStore.setItemAsync('userRole', role);
+        toast({ type: 'success', title: 'Berhasil', message: `Selamat datang, ${fullName}!` });
+        router.replace('/(tabs)');
+      } else {
+        toast({ type: 'error', title: 'Login Gagal', message: result.message || 'Username atau password salah.' });
+      }
+    } catch {
+      toast({ type: 'error', message: 'Gagal terhubung ke server.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
