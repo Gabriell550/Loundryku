@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 import { toast } from '../../contexts/ToastContext';
 import GlassCard from '../../components/ui/GlassCard';
@@ -13,6 +15,7 @@ import PillButton from '../../components/ui/PillButton';
 import { colors, gradients, spacing, typography } from '../../constants/theme';
 import { orderService } from '../services/orderService';
 import type { Order } from '../types';
+import { generateReceiptHtml } from '../components/ReceiptHtml';
 
 function formatRupiah(n: number) {
   return 'Rp ' + n.toLocaleString('id-ID');
@@ -76,6 +79,34 @@ export default function OrderDetailScreen() {
 
   const handlePayment = () => {
     router.push({ pathname: `/payments/${id}` } as any);
+  };
+
+  const handlePrintReceipt = async () => {
+    try {
+      const html = generateReceiptHtml(order!);
+      await Print.printAsync({ html });
+    } catch (err: any) {
+      toast({ type: 'error', message: err.message || 'Gagal mencetak' });
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      const html = generateReceiptHtml(order!);
+      const { uri } = await Print.printToFileAsync({ html });
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: `Struk ${order!.invoiceNumber}`,
+          UTI: 'com.adobe.pdf',
+        });
+      } else {
+        toast({ type: 'warning', message: 'Sharing tidak tersedia' });
+      }
+    } catch (err: any) {
+      toast({ type: 'error', message: err.message || 'Gagal download PDF' });
+    }
   };
 
   if (loading || !order) {
@@ -160,9 +191,20 @@ export default function OrderDetailScreen() {
             </View>
           </GlassCard>
 
-          {!isPaid && (
+          {!isPaid ? (
             <View style={styles.actionButtons}>
               <PillButton title="Bayar Sekarang" onPress={handlePayment} />
+            </View>
+          ) : (
+            <View style={styles.receiptActions}>
+              <TouchableOpacity style={styles.receiptBtn} onPress={handlePrintReceipt}>
+                <Ionicons name="print-outline" size={18} color="#ffffff" />
+                <Text style={styles.receiptBtnText}>Cetak Struk</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.receiptBtn, styles.receiptBtnOutline]} onPress={handleDownloadPdf}>
+                <Ionicons name="download-outline" size={18} color={colors.primary} />
+                <Text style={[styles.receiptBtnText, { color: colors.primary }]}>PDF</Text>
+              </TouchableOpacity>
             </View>
           )}
 
@@ -229,4 +271,13 @@ const styles = StyleSheet.create({
   statusBtnActive: { backgroundColor: '#E3F2FD', borderColor: colors.primary },
   statusBtnText: { fontFamily: 'Inter_600SemiBold', fontSize: 12, color: '#414755' },
   statusBtnTextActive: { color: colors.primary },
+  receiptActions: { flexDirection: 'row', gap: 12, marginTop: 16 },
+  receiptBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: colors.primary, paddingVertical: 12, borderRadius: 24,
+  },
+  receiptBtnOutline: {
+    backgroundColor: '#ffffff', borderWidth: 2, borderColor: colors.primary,
+  },
+  receiptBtnText: { fontFamily: 'Inter_700Bold', fontSize: 13, color: '#ffffff' },
 });

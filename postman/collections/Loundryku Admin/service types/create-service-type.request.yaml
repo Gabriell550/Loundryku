@@ -52,7 +52,7 @@ body:
 
       "name": "Cuci Reguler",
 
-      "unit": "kg",
+      "weight": "kg",
 
       "price": 5000
 
@@ -114,7 +114,7 @@ post-response:
 
         pm.expect(jsonData.data.name).to.be.a("string").and.not.empty;
 
-        pm.expect(jsonData.data.unit).to.be.a("string").and.not.empty;
+        pm.expect(jsonData.data.weight).to.be.a("string").and.not.empty;
 
         pm.expect(jsonData.data.price).to.not.eql(null);
 

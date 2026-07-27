@@ -47,9 +47,6 @@ public class Order {
 
     private String paymentMethod; // "CASH" atau "TRANSFER", diisi saat pelunasan
 
-    private LocalDateTime estimatedCompletionTime; // perkiraan selesai laundry, diisi saat order diterima
-    private LocalDateTime completedAt; // waktu selesai laundry, diisi saat status diubah ke SELESAI
-    private LocalDateTime pickedUpAt; // waktu diambil customer, diisi saat status diubah ke DIAMBIL
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

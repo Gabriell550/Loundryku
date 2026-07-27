@@ -69,6 +69,23 @@ export default function RootLayout() {
         </Stack>
       </ToastProvider>
     </QueryClientProvider>
+    <ToastProvider>
+      <StatusBar style="dark" />
+      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="customers/add" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="customers/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="orders/add" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="orders/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="orders/search" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="payments/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="payments/[orderId]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="reports/index" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="reports/[period]" options={{ animation: 'slide_from_right' }} />
+      </Stack>
+    </ToastProvider>
   );
 }
 
@@ -77,6 +94,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: '#001a3a',
   },
 });

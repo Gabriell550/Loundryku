@@ -81,7 +81,6 @@ public class OrderServiceImpl implements OrderService {
                 .totalPrice(total)
                 .status(OrderStatus.DITERIMA)
                 .createdAt(LocalDateTime.now())
-                .estimatedCompletionTime(request.getEstimatedCompletionTime())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
@@ -121,13 +120,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = getOrderById(id);
         order.setStatus(status);
         order.setUpdatedAt(LocalDateTime.now());
-
-        if (status == OrderStatus.SELESAI) {
-            order.setCompletedAt(LocalDateTime.now());
-        } else if (status == OrderStatus.DIAMBIL) {
-            order.setPickedUpAt(LocalDateTime.now());
-        }
-
         return orderRepository.save(order);
     }
 

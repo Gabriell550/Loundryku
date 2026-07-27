@@ -167,7 +167,7 @@ export default function DashboardScreen() {
           </BlurView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickAccessCard} onPress={() => router.push({ pathname: '/orders/search', params: { mode: 'payment' } })}>
+        <TouchableOpacity style={styles.quickAccessCard} onPress={() => router.push('/payments' as any)}>
           <BlurView intensity={30} tint="light" style={styles.glassCardSquare}>
             <Ionicons name="wallet-outline" size={28} color="#191c1e" />
             <Text style={styles.quickAccessTextDark}>Pembayaran</Text>
