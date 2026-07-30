@@ -1,0 +1,32 @@
+[33m82cf598[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #5 from Gabriell550/UiLaporan
+[33mc25d993[m Merge branch 'main' into UiLaporan
+[33m076febd[m menghapus login skip
+[33m9c2c9e1[m menambahkan uilaporan belum fix
+[33m3dea087[m Add README
+[33mc46d5e0[m solve and updatae : pembayaran, tambah order, struk rint
+[33m0ce9967[m Refactor "weight" jadi "unit"
+[33mc10c6ed[m update : loading page, logo icon
+[33mc931b80[m[33m ([m[1;31morigin/UiLaporan[m[33m)[m skip login di login.tsx dan mengubah styling pada usermanagement
+[33m39a84a0[m hilangin type di customer
+[33mdc04189[m refactor weight ke unit
+[33m526cacb[m update : design app, swipe tab, edit order and tambah customer, sesuaikan dgn londry
+[33mfad2414[m Update_1 : create every design page and integration API from backend
+[33m359795c[m Cek semua endpoint & refactor "unit" jadi "weight"
+[33md3906f5[m Merge pull request #4 from Gabriell550/semua-kecuali-login-api
+[33m17d583f[m integration API key login
+[33m2b5e710[m[33m ([m[1;31morigin/semua-kecuali-login-api[m[33m)[m api kecuali login
+[33mcd66f87[m dashboard
+[33m28e060e[m delete
+[33mf3f8880[m delete
+[33m913a58d[m Merge pull request #3 from Gabriell550/feature-register
+[33mde572a4[m[33m ([m[1;31morigin/feature-register[m[33m)[m update : login
+[33mc953903[m update : feature-login kasir
+[33maea3006[m Benerin env ke mongodb & simplify jadi hanya untuk pencatatan kasir, serta membuat api login, serta seluruh endpoint
+[33mece7103[m Merge pull request #2 from Gabriell550/manajemen-orang
+[33mdc22779[m[33m ([m[1;31morigin/manajemen-orang[m[33m)[m menambahkan tabel userManage menggunakan lib table react
+[33mcae0a91[m update design
+[33m200a035[m design app
+[33mb9baeeb[m Add API
+[33m0cf7506[m inisiasi file backend
+[33mbd39699[m Instal Frame Back & Front
+[33ma1cd8d0[m yawawee

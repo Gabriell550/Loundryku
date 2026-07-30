@@ -38,13 +38,6 @@ const SERVICE_NAMES: Record<ServiceCode, string> = {
   CB: 'Cuci Basah',
 };
 
-// Matriks Harga Resmi Tiara Laundry
-const PRICING_TABLE: Record<CategoryType, Partial<Record<ServiceCode, number>>> = {
-  Reguler: { CS: 6500, CK: 5500, S: 5500 },
-  Kilat: { CS: 10000, CK: 7000, S: 8000 },
-  Express: { CS: 13500, CK: 10000, S: 10000, CB: 5000 },
-};
-
 // Preset Tombol Cepat Berat (kg)
 const PRESET_WEIGHTS = ['1', '2', '3', '4', '5', '10'];
 
@@ -108,7 +101,10 @@ export default function AddOrderScreen() {
 
   const getPricePerKg = (category: CategoryType | '', code: ServiceCode | ''): number => {
     if (!category || !code) return 0;
-    return PRICING_TABLE[category]?.[code] || 0;
+    const serviceName = SERVICE_NAMES[code];
+    if (!serviceName) return 0;
+    const st = serviceTypeMap.get(`${category}|${serviceName}`);
+    return st?.price || 0;
   };
 
   const calculateSubtotal = (item: OrderItemState): number => {
@@ -367,7 +363,7 @@ export default function AddOrderScreen() {
                   <View style={styles.chipRow}>
                     {availableCodes.map((code) => {
                       const isSelected = item.serviceCode === code;
-                      const price = PRICING_TABLE[item.category as CategoryType]?.[code] || 0;
+                      const price = getPricePerKg(item.category, code);
                       return (
                         <TouchableOpacity
                           key={code}

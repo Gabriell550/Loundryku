@@ -96,7 +96,7 @@ export default function DashboardScreen() {
     >
       <View style={styles.header}>
         <View style={styles.profileSection}>
-          <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.avatar} />
+          <Image source={require('../../assets/images/Logo.png')} style={styles.avatar} />
           <View>
             <Text style={styles.profileName}>Digital Kasir</Text>
             <Text style={styles.profileRole}>{userRole}</Text>

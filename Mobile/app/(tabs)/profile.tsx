@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -48,7 +48,7 @@ export default function ProfileScreen() {
 
       <BlurView intensity={30} tint="light" style={styles.profileCard}>
         <View style={styles.avatarLarge}>
-          <Ionicons name="person" size={36} color={colors.primary} />
+          <Image source={require('../../assets/images/Logo.png')} style={{ width: 72, height: 72, borderRadius: 36 }} />
         </View>
         <Text style={styles.fullName}>{user.fullName}</Text>
         <View style={styles.roleBadge}>
